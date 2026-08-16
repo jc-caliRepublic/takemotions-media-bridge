@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MediaBridge" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
+    <!-- Same light theme in dark mode on purpose — see values/themes.xml. -->
+    <style name="Base.Theme.MediaBridge" parent="Theme.Material3.Light.NoActionBar">
     </style>
 </resources>

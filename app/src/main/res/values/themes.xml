@@ -1,7 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MediaBridge" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+    <!-- Light only, deliberately. The card backgrounds (info_box / inner_box) are fixed
+         light greys, so following the system into dark mode would put dark text on a
+         light box. TakeMotions companion UIs are light-only across the board. -->
+    <style name="Base.Theme.MediaBridge" parent="Theme.Material3.Light.NoActionBar">
     </style>
 
     <style name="Theme.MediaBridge" parent="Base.Theme.MediaBridge" />

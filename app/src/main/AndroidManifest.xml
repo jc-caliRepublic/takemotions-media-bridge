@@ -9,8 +9,19 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
+    <!-- Captions: capture the playback mix (never the microphone). Android routes
+         AudioPlaybackCapture through AudioRecord, so it demands RECORD_AUDIO even
+         though no mic is ever opened; the capture is scoped to the projection token
+         the user grants per session. Android 12+ only — the app runs without it. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
     <!-- Persistent "running" notification (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Restart the media bridge after a reboot, so the switch keeps meaning what it
+         says. Granted at install time; it cannot read anything. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Resolve a media app's display name (e.g. "Spotify") from its package, despite
          Android 11+ package-visibility filtering. Restricted on Google Play, but
@@ -48,6 +59,24 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Serves the currently-playing media info to TakeMotions glasses companion apps over the loopback interface (127.0.0.1) and relays their playback commands." />
         </service>
+
+        <!-- Foreground service: owns the MediaProjection token, transcribes the playback
+             mix on-device and serves the caption feed on 127.0.0.1:8767. Separate from
+             BridgeService so the media feed is unaffected whether captions run or not. -->
+        <service
+            android:name=".caption.CaptureService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- Restarts the bridge after a reboot or an app update (see BootReceiver). -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Empty notification listener. It is ONLY the access handle Android requires for
              MediaSessionManager.getActiveSessions; its callbacks are no-ops. Media Bridge

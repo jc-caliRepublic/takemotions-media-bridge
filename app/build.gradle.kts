@@ -22,10 +22,13 @@ android {
 
     defaultConfig {
         applicationId = "com.takemotions.mediabridge"
+        // Stays at 26 for the media bridge. Captions need more (playback capture is
+        // Android 10+, the recognizer Android 12+) and are gated at runtime instead,
+        // so nobody already using v1 loses the app.
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.0.0"
+        versionCode = 16
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,10 +68,15 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.kotlinx.coroutines.android)
 
-    // Media Bridge: tiny localhost HTTP server.
+    // Tiny localhost HTTP server — one instance per feed (:8766 media, :8767 captions).
     // Media access uses the platform MediaSessionManager (no extra dep).
-    implementation("org.nanohttpd:nanohttpd:2.3.1")
+    implementation(libs.nanohttpd)
+
+    // Captions: Google's on-device speech recognition (alpha), fed external PCM via a pfd.
+    // Transcription only — translation is the glasses companion's job, so no translate SDK.
+    implementation(libs.mlkit.genai.speech)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
